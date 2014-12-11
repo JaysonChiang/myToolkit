@@ -4,13 +4,13 @@
 
             if (string.IsNullOrWhiteSpace(subject))
             {
-                jo.Add("Msg", "¨S¦³¿é¤J¼ÐÃD");
-                return Content("{\"Msg\":\"¨S¦³¿é¤J¼ÐÃD\"}","application/json");
+                jo.Add("Msg", "æ²’æœ‰è¼¸å…¥æ¨™é¡Œ");
+                return Content("{\"Msg\":\"æ²’æœ‰è¼¸å…¥æ¨™é¡Œ\"}","application/json");
             }
             if (string.IsNullOrWhiteSpace(content))
             {
-                jo.Add("Msg", "¨S¦³¿é¤J¤º®e");
-                return Content("{\"Msg\":\"¨S¦³¿é¤J¤º®e\"}", "application/json");
+                jo.Add("Msg", "æ²’æœ‰è¼¸å…¥å…§å®¹");
+                return Content("{\"Msg\":\"æ²’æœ‰è¼¸å…¥å…§å®¹\"}", "application/json");
             }
             try
             {
