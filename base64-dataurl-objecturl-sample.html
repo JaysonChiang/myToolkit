@@ -1,0 +1,131 @@
+<html>
+
+<head>
+    <title>File transfer Sample</title>
+    <style>
+        .upload-image {
+            width: 150px;
+            height: 100px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <label for="data-url-upload">Upload image as data-url</label>
+        <input id="data-url-upload" type="file"></input>
+        <button id="data-url-download">Download imagefrom data-url</button>
+    </div>
+
+    <div>
+        <label for="obj-url-upload">upload image as obj-url</label>
+        <input id="obj-url-upload" type="file"></input>
+        <button id="obj-url-download">Download imagefrom obj-url</button>
+    </div>
+    <div>
+        <img id="upload-image" class="upload-image" />
+    </div>
+    <script>
+        const uploadImage = document.querySelector('#upload-image');
+
+        const download = (file, filename) => {
+            const url = URL.createObjectURL(file);
+
+            const element = document.createElement('a');
+            element.setAttribute('href', url);
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+        /////////////////
+        // Data-Url
+
+        // Upload
+        const uploadDataUrl = document.querySelector('#data-url-upload');
+
+        const readDataUrl = file => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                console.log(reader.result); // data:image/jpeg;base64,/9j/4AAQSkZJRgABA......
+                sessionStorage.setItem('dataUrl', reader.result); // save data into storage
+                uploadImage.style.backgroundImage = `url(${reader.result})`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        uploadDataUrl.addEventListener('change', e => {
+            readDataUrl(e.target.files[0])
+        });
+
+        
+        // Download
+        const downloadDataUrl = document.querySelector('#data-url-download');
+
+        const b64dataToFile = (b64data, filename) => {
+            const arr = b64data.split(",");
+            const b64mime = arr[0].match(/:(.*?);/)[1];
+            const b64str = atob(arr[1]);
+            let len = b64str.length;
+            const buf = new Uint8Array(len);
+
+            while (len--) {
+                buf[len] = b64str.charCodeAt(len);
+            }
+
+            return new File([buf], filename, { type: b64mime });
+        };
+
+        downloadDataUrl.addEventListener('click', e => {
+            const filename = 'data-image.jpg';
+            const file = b64dataToFile(sessionStorage.getItem('dataUrl'), filename);
+            download(file, filename);
+        });
+
+        /////////////////
+        //// Object-Url
+
+        // Upload
+        const uploadObjUrl = document.querySelector('#obj-url-upload');
+
+
+        const readObjUrl = file => {
+            const url = URL.createObjectURL(file);
+            console.log(url); // blob:null/b3cd5c16-96da-4ef0-ad1a-d5d56431052e
+            sessionStorage.setItem('objUrl', url); // save data into storage
+            uploadImage.style.backgroundImage = `url(${url})`;
+        }
+
+        uploadObjUrl.addEventListener('change', e => {
+            readObjUrl(e.target.files[0]);
+        });
+
+
+        // Download
+        const downloadObjUrl = document.querySelector('#obj-url-download');
+
+        const urlToFile = (url, filename) => {
+            return fetch(url)
+                .then(res => res.arrayBuffer())
+                .then(buf => new File([buf], filename));
+        };
+
+        downloadObjUrl.addEventListener('click', e => {
+            const filename = 'obj-image.jpg';
+            urlToFile(sessionStorage.getItem('objUrl'), filename).then(file => {
+                download(file, filename);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
